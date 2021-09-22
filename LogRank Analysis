@@ -9,7 +9,7 @@ library(tidyverse)
 #where analyzed and gated using the FlowGating R code within this repository then GFP MFI is recorded. 
 
 #The STI dataset contains over 3,000 inhibitor molecules that were challenged by a automated robot cytometer.
-#This code analyzes the MFI and builds a survival plot.
+#This code analyzes the MFI and builds a survival plot and calculates PVAL and FDR of the successful inhibitors.
 
 
 #import and shape data
