@@ -1,4 +1,8 @@
 library(flowCore)
+library(dplyr)
+library(tidyverse)
+
+#This code import batch flow files and sets gates (in code as blob function)
 
 ff = read.FCS("PBMC + A301_ACH2__1_019.fcs")
 ff = autocomp(ff)
