@@ -3,6 +3,13 @@ library(ggplot2)
 library(tidyverse)
 library(dbplyr)
 library(dplyr)
+
+#This is a growth rate calculator. The experiment is to test quality of FBS from 3 vendors.
+#Which FBS is the best? 1e5 cells were seeded and counted every 24hr time points. 
+#Calculate growth logistic and plot
+
+#enter seed seeding density and K maximum capacity of the environment. 
+#Typical cell culture confluency is 1e6cells/mL
 seed = 1e5
 K = 1e6
 
