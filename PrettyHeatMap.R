@@ -65,7 +65,7 @@ row.names(colannot) = colnames(r)
 
 #Plot heatmap with annotations and breaks
 pheatmap(r2, cluster_rows = F,cluster_cols = F,gaps_row = c(2,8,12,27,33,39), cellwidth = 20,
-         annotation_row = rowannot)
+         annotation_row = rowannot, annotation_col = colannot)
 
-, annotation_col = colannot
+
 
