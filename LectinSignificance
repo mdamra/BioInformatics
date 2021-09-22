@@ -8,7 +8,7 @@ library(corrplot)
 library(RColorBrewer)
 library(ggplot2)
 
-mydata = read.csv("GILEAD1.csv")
+mydata = read.csv("data.csv")
 lectins = mydata$Name
 rownames(mydata) = mydata$Name
 mydata = mydata[,-c(1)]
