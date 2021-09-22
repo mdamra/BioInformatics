@@ -1,7 +1,7 @@
 library(tidyverse)
 library(pheatmap)
 
-
+#Create pretty heatmap with annotated key
 #Read CSV file to variable
 data = read.csv("JO.csv")
 #Assign rownames and adjust df dimensions
