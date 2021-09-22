@@ -43,7 +43,7 @@ J5A8Td%>%
   geom_smooth( method = "glm",
                method.args = list(family="binomial"),
                data = J5A8Td, se= F, col = "red")
-
+#x*0.8 is a safety in reality of lab work to 80% confluency.
 confluency = max(J10.6d$J10.6GrowthRate1)*0.8
 J10.6 = read.csv("JLAT10.6.csv")
 J10.6d = mutate(J10.6, J10.6dR= log(Count/seed),
