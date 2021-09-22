@@ -3,6 +3,13 @@ library(survminer)
 library(dplyr)
 library(tidyverse)
 
+#This is a log rank test aka(LifeTest) of inhibitors on Jlat and Jurkat cells with an HIV-Promotor. The cells were activated with aCD3/aCD29 and PMA/Ionomycin.
+#Cells were then challenged with inhibotor molecules to inhibit the HIV-1 Promotor after activation where then GFP MFI is recorded. 
+
+#THe dataset contains over 30,000 inhibitors that were challenged by a automated robot cytometer.
+#This code analyzes the MFI and builds a survival plot.
+
+
 #import and shape data
 read = read.csv('G2.csv')
 df1 = read[1:24,]
