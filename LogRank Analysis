@@ -3,8 +3,8 @@ library(survminer)
 library(dplyr)
 library(tidyverse)
 
-#This is a log rank test aka(LifeTest) of inhibitors on Jlat and Jurkat cells with an HIV-Promotor. 
-#The cells were activated with aCD3/aCD29 and PMA/Ionomycin and commited to a "TIME-TO-REBOUND" experiment.
+#This is a log rank test of inhibitors on Jlat and Jurkat cells with an HIV-Promotor. 
+#The cells were activated with aCD3/aCD28 and PMA/Ionomycin and commited to a "TIME-TO-REBOUND" experiment.
 #Cells were then challenged with inhibotor molecules to inhibit the HIV-1 Promotor after activation. The batch flow .fcs files
 #where analyzed and gated using the FlowGating R code within this repository then GFP MFI is recorded. 
 
