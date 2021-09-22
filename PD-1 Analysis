@@ -1,0 +1,115 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+Reading in data
+
+```{r}
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+clinical = read_tsv("clinical.tsv")
+fpkm = read_tsv("fpkm.tsv")
+variants = read_tsv("variants.tsv")
+```
+Question: Does previous treatment to Ipilumimab yield better "Best Overall Response" scores given an anti-PD1 treatment?
+
+H0 = There is no difference in reponse to the inhibitor whether or not you have previous Ipilumimab treatment
+
+HA = The difference in reponse to the inhibitor is significant between patients taken a previous Ipilumimab treatment
+
+Exome sequencing gives us information about the protein coding regions.
+
+The RNA-Seq technique identifies the sequence of the tumor. Here we have the expressed gene intesnity in the sample. 
+
+Using the expressed rna sequences, we can compare which active genes in the protein exome dataset are contributory to the BOR score. An effect of Ipilumimab must yield a signifcant response in genetic expression that yields to a better BOR score. 
+
+Testing the significant active genes between response groups helps identify which mutations are signficant amongst a particular group (PD, SD, PR, and CR groups) and testing signifcance difference of these grouped patients against patients with Ipilumimab history through an ANOVA analysis.
+
+At the moment we have uncleaned data of RNA-Seq results and exome tumor sequencing. 
+Merging the rna-seq data into the somatic mutation dataset by gene.hgnc.symbol and patient, allows us to identify patient genomic expression and mutation of their . 
+
+To merge the databases, we must edit and modify the subject.id on the clinical database to use as an index. 
+
+Since we only have the RNA-Seq Data then we can drop the Variant rows because we do not have a measurement for those mutations. 
+
+```{r}
+library(stringr)
+clinical <- clinical %>%
+  mutate_at("subject.id", str_replace, "_liu", "")
+
+rna = full_join(variants, fpkm, by = c("gene.hgnc.symbol","subject.id"))
+patientGenes = rna %>% group_by(gene.hgnc.symbol)
+
+patientGenes = patientGenes %>% drop_na
+
+groupedGenes = patientGenes %>% group_by(gene.hgnc.symbol, collapsed.consequences,variant.id ,subject.id ) %>%
+  summarise(
+    count = n(),
+    mean = mean(value)
+  )
+
+groupedGenes = groupedGenes %>% filter(mean>0)
+```
+
+Now, we have a dataset the average measurements genes from the RNA-Seq results of each patient with thier cooresponding variant.ids (Chromosomal position). 
+
+Merging the clinical data with our average RNAseq data yields a psuedo-ready clinical reporting of the genetic results. 
+```{r}
+filteredClinical = full_join(groupedGenes, clinical, by = c("subject.id"))
+```
+
+Interesingly, this dataset contains 2 factors that measure responce. The Progression-free Survival (PFS) score also provides us censoring data. The higher the PFS value, the longer the patient has been included in the study. Low values indicate censoring or have aggressive diseases and regress. Since we do not have time-to-event (T) data, a decision is required whether or not these records should be kept. 
+
+A histogram, delivers insightful knowledge. Typically, this dataset has low >1000PFS counts. Filtering these data rows yields records with higher dynamic ranges that we can look at. 
+
+OLS analysis shows the close relationship to the BOR, 
+```{r}
+histogram(filteredClinical$pfs)
+pfsfilteredClinical = filteredClinical %>% filter(pfs<1000)
+histogram(pfsfilteredClinical$pfs)
+
+```
+Measuring each of the BOR categories by PFS, it seems that most patients who were prescribed CTLA4 remained in disease state (PD and SD) and progress worse than patients who have no history of CTLA4
+```{r}
+ggplot(pfsfilteredClinical, aes(x = bor, y = pfs,col = previous)) + geom_col()
+
+pfsfilteredClinical2 = pfsfilteredClinical %>% group_by(gene.hgnc.symbol, collapsed.consequences,variant.id,previous,meddra.disease.preferred.name, bor ) %>%
+  summarise(
+    count = n(),
+    mean = mean(mean)
+  )
+pfsfilteredClinical2 = pfsfilteredClinical %>% filter(mean<100)
+histogram(pfsfilteredClinical2$mean)
+```
+```{r}
+pfsfilteredClinical2 = pfsfilteredClinical %>% group_by(gene.hgnc.symbol,previous,mean, bor,pfs ) %>%
+  summarise(
+    count = n(),
+    mean = mean(mean)
+  )
+
+pfsfilteredClinical2 = pfsfilteredClinical2 %>% drop_na
+pfsfilteredClinical2 %>% spread(bor,value = pfs )
+pfsfilteredClinical2
+```
+
+
+```{r}
+ggplot(pfsfilteredClinical2, aes(x = gene.hgnc.symbol, y = mean,col = previous)) + geom_col()
+
+ANOVA = aov(gene.hgnc.symbol~.,data =pfsfilteredClinical2)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
